@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.ericsson.techgroup.servicegroupcontainers</groupId>
+        <artifactId>platform</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ERICenmsgplatform_CXP9032925</artifactId>
+    <packaging>${rpm.packaging}</packaging>
+
+    <name>[${project.parent.artifactId}] CXP module</name>
+
+    <properties>
+        <publish_artifact>true</publish_artifact>
+        <com.ericsson.oss.rpm.architecture>noarch</com.ericsson.oss.rpm.architecture>
+        <rpm-root>opt</rpm-root>
+        <comp-name>ericsson</comp-name>
+        <install-path>com.ericsson.oss.ci-archetypes</install-path>
+        <install-path>com.ericsson.oss.servicegroupcontainers.httpd</install-path>
+        <media.category>service</media.category>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.ericsson.oss.itpf.deployment</groupId>
+                <artifactId>deployment-descriptor-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>configurable-entity</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configEntity>
+                        <stereotype>SERVICE_PKG</stereotype>
+                        <parameters>
+                            <property name="vm_service_name" defaultValue="platform" />
+                            <itemType name="vm-package">
+                                <property name="name" defaultValue="ERICenmsgplatform_CXP9032925" />
+                            </itemType>
+                        </parameters>
+                        <deploymentDependencies>
+                            <deploymentDependency>
+                                <groupId>com.ericsson.oss.itpf.deployment.tools</groupId>
+                                <artifactId>virtual-machine</artifactId>
+                                <qualifier>CONTAINER</qualifier>
+                                <alias>vm</alias>
+                            </deploymentDependency>
+                            <deploymentDependency>
+                                <groupId>com.ericsson.oss.itpf.deployment.tools</groupId>
+                                <artifactId>alias</artifactId>
+                                <alias>httpd-instance1</alias>
+                            </deploymentDependency>
+                            <deploymentDependency>
+                                <groupId>com.ericsson.oss.itpf.deployment.tools</groupId>
+                                <artifactId>alias</artifactId>
+                                <alias>httpd-instance2</alias>
+                            </deploymentDependency>
+                            <deploymentDependency>
+                                <groupId>com.ericsson.oss.itpf</groupId>
+                                <artifactId>ERIClitpconfigmanagerapi_CXP9031613</artifactId>
+                                <alias>httpd-instances</alias>
+                            </deploymentDependency>
+                            <deploymentDependency>
+                                <groupId>com.ericsson.nms.security</groupId>
+                                <artifactId>ERICidentitymgmt_CXP9030739</artifactId>
+                                <alias>identitymgmt</alias>
+                            </deploymentDependency>
+                            <deploymentDependency>
+                                <groupId>com.ericsson.oss.presentation.client.uisystembar.userprofilemenu</groupId>
+                                <artifactId>ERICuserprofilemenu_CXP9031485</artifactId>
+                                <alias>userprofilemenu</alias>
+                            </deploymentDependency>
+                        </deploymentDependencies>
+                        <assignments>
+                            <assign>
+                                <path>vm</path>
+                                <property name="routable_interfaces" value="0" />
+                                <itemType name="vm-service">
+                                    <property name="service_name" value="platform" />
+                                    <property name="cpus" value="2" />
+                                    <property name="ram" value="2048M" />
+                                    <property name="image_name" value="lsb-image" />
+                                </itemType>
+                                <itemType name="vcs-clustered-service">
+                                    <property name="active" value="2" />
+				    <property name="dependency_list" value="sps" />
+                                    <property name="standby" value="0" />
+                                </itemType>
+                            </assign>
+                            <assign>
+                                <path>vm</path>
+                                <scope>PHYSICAL_PRODUCTION</scope>
+                                <itemType name="vm-service">
+                                    <property name="cpus" value="2" />
+                                    <property name="ram" value="2048M" />
+                                </itemType>
+                            </assign>
+                            <assign>
+                                <path>vm</path>
+                                <scope>PHYSICAL_TEST</scope>
+                                <itemType name="vm-service">
+                                    <property name="cpus" value="2" />
+                                    <property name="ram" value="2048M" />
+                                </itemType>
+                            </assign>
+                            <assign>
+                                <path>vm</path>
+                                <scope>CLOUD</scope>
+                                <itemType name="vm-service">
+                                    <property name="cpus" value="2" />
+                                    <property name="ram" value="2048M" />
+                                </itemType>
+                            </assign>
+                            <assign>
+                                <path>httpd-instance1</path>
+                                <property name="alias_names" value="httpd-instance-1,iorfile1.%%httpd_fqdn%%" />
+                                <property name="address" value="%%httpd_1_ip_internal%%" />
+                            </assign>
+                            <assign>
+                                <path>httpd-instance2</path>
+                                <property name="alias_names" value="httpd-instance-2,iorfile2.%%httpd_fqdn%%" />
+                                <property name="address" value="%%httpd_2_ip_internal%%" />
+                            </assign>
+                            <assign>
+                                <path>httpd-instances</path>
+                                <itemType name="config-manager-property">
+                                    <property name="key" value="httpd_instances" />
+                                    <property name="value" value="httpd-instance-1,httpd-instance-2" />
+                                </itemType>
+                            </assign>
+                        </assignments>
+                    </configEntity>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rpm-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <skip>true</skip>
+                    <inherited>true</inherited>
+                    <copyright>2014 Ericsson AB All rights reserved</copyright>
+                    <description>${ericsson.rstate}</description>
+                    <group>ERI-NMS</group>
+                    <vendor>Ericsson AB</vendor>
+                    <url>www.ericsson.com</url>
+                    <requires>
+                        <!-- httpd requires section -->
+                        <!-- Credential Manager -->
+                        <require>ERICcredentialmanagercli_CXP9031389</require>
+                        <!-- SSO -->
+                        <!-- Policy agent requires httpd & mod_ssl -->
+                        <require>ERICssopolicyagent_CXP9031006</require>
+                        <!-- HTTP Config -->
+                        <require>ERIChttpdconfig_CXP9031096</require>
+                        <require>ERICidmhttpdconfig_CXP9031681</require>
+                        <!-- Client SDK -->
+                        <require>ERICclientsdk_CXP9031194</require>
+                        <!-- UI Applications -->
+                        <require>ERICactivityserviceui_CXP9031439</require>
+                        <require>ERIChelp_CXP9030287</require>
+                        <require>ERIClogin_CXP9030307</require>
+                        <require>ERICpmicgui_CXP9030386</require>
+                        <require>ERICshmui_CXP9030799</require>
+                        <!-- Client Scripting -->
+                        <require>ERICclientscripting_CXP9031854</require>
+                        <!-- Monitoring -->
+                        <require>ERICddc_CXP9030294</require>
+                        <!-- AMOS -->
+                        <require>ERICamosui_CXP9032045</require>
+                        <require>ERICapclient_CXP9030532</require>
+                        <require>ERICsystemmonitoring_CXP9031910</require>
+                        <require>ERICalexsoftware_CXP9031822</require>
+                        <require>ERICpkimanagerui_CXP9032047</require>
+                        <require>ERICsecuritylibraryui_CXP9032684</require>
+                        <require>ERICnodesecurityui_CXP9032647</require>
+                        <!--Eagle Analyzer-->
+                        <require>EXTRjackson_CXP9032488</require>
+                        <require>EXTRjsoup_CXP9032466</require>
+                        <require>EXTRhttpclient_CXP9032489</require>
+                        <require>EXTRcommonscodec_CXP9032487</require>
+                        <require>EXTRhttpcore_CXP9032486</require>
+                        <require>ERICeagleanalyzer_CXP9032470</require>
+                        <!-- Remote Desktop Applications -->
+                        <require>ERICremotedesktop_CXP9032646</require>
+                        <!-- HAProxy requires section -->
+                        <require>ERIChaproxyconfig_CXP9031973 &gt; 1.6.8</require>
+                        <require>ERICcredentialmanagercli_CXP9031389</require>
+                        <require>ERICcredentialmgrclidbconfig_CXP9032561</require>
+                    </requires>
+                    <mappings>
+                        <!-- HAProxy mappings-->
+                        <mapping>
+                            <directory>/ericsson/3pp/haproxy/data/config</directory>
+                            <filemode>755</filemode>
+                            <sources>
+                                <source>
+                                    <location>src/main/resources/haproxy-ext.cfg.template</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>/ericsson/3pp/haproxy/etc/</directory>
+                            <filemode>755</filemode>
+                            <sources>
+                                <source>
+                                    <location>src/main/scripts/install_external_haproxy.sh</location>
+                                </source>
+                                <source>
+                                    <location>src/main/resources/configure_haproxy-ext.sh</location>
+                                </source>
+                                <source>
+                                    <location>src/main/scripts/haproxy_restart.sh</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>/usr/lib/ocf/resource.d</directory>
+                            <filemode>755</filemode>
+                            <username>root</username>
+                            <groupname>root</groupname>
+                            <configuration>false</configuration>
+                            <directoryIncluded>false</directoryIncluded>
+                            <recurseDirectories>false</recurseDirectories>
+                            <sources>
+                                <source>
+                                    <location>src/main/scripts/healthcheck</location>
+                                    <includes>
+                                        <include>haproxy-ext_healthcheck.sh</include>
+                                    </includes>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>/ericsson/3pp/haproxy/data/cert_request</directory>
+                            <filemode>755</filemode>
+                            <sources>
+                                <source>
+                                    <location>src/main/certificates/haproxy-ext_CertRequest.xml.template</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                    </mappings>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

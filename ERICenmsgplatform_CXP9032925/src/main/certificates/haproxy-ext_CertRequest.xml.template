@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="CertificateRequest.xsd">
+    <application>
+        <certificates>
+            <certificate>
+                <certificatechain>true</certificatechain>
+                <tbscertificate>
+                    <subject>
+                        <entityname>apache_server_haproxy</entityname>
+                        <distinguishname>CN=FQDN</distinguishname>
+                    </subject>
+                    <certificateextension>
+                        <subjectalternativename>
+                            <dns>FQDN</dns>
+                            <ipaddress>HAPROXY-EXT_IP</ipaddress>
+                        </subjectalternativename>
+                    </certificateextension> 
+                </tbscertificate>
+
+                <endentityprofilename>ENM_System_UI_SAN_LB_EP</endentityprofilename>
+
+                <keypair>
+                    <keypairsize>2048</keypairsize>
+                    <keypairalgorithm>RSA</keypairalgorithm>
+                </keypair>
+
+                <keystore>
+                    <base64keystore>
+                        <storealias>Load-balancer-server-cert</storealias>
+                        <storelocation>/ericsson/tor/data/certificates/haproxy/apacheserver.pem</storelocation>
+                    </base64keystore>
+                </keystore>
+
+                <oncheckresult>
+                    <actionlist>
+                        <checkcause>certificateUpdate</checkcause>
+                        <action>RunScript</action>
+                        <command>
+                            <pathname>/ericsson/3pp/haproxy/etc/haproxy_restart.sh</pathname>
+                        </command>
+                    </actionlist>
+                </oncheckresult>
+
+            </certificate>
+        </certificates>
+
+        <!--worst case-->
+        <crlupdatemode>CrlNotManaged</crlupdatemode>
+    </application>
+
+    <user>
+        <username>haproxy</username>
+        <usergroup>haproxy</usergroup>
+    </user>
+
+</applications>
